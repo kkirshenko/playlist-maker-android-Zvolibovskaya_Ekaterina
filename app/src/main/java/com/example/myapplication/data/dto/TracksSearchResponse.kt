@@ -1,3 +1,7 @@
 package com.example.myapplication.data.dto
 
-class TracksSearchResponse(val results: List<TrackDto>) : BaseResponse()
+
+data class TracksSearchResponse(
+    val resultCount: Int,
+    val results: List<TrackDto>
+) : BaseResponse()
