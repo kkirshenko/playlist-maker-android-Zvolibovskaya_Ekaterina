@@ -1,43 +1,29 @@
 package com.example.myapplication
 
-import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-class SearchActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            SearchScreen()
-        }
-    }
-}
-
-@Preview()
 @Composable
-fun SearchScreen() {
-    val context = LocalContext.current
-    val activity = context as? Activity
+fun SearchScreen(onBack: () -> Unit) {
     var searchQuery by remember { mutableStateOf("") }
 
 
@@ -52,7 +38,7 @@ fun SearchScreen() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { activity?.finish() }, modifier = Modifier
+                onClick = { onBack() }, modifier = Modifier
                     .padding(0.dp, end = 24.dp)
                     .size(24.dp)
             ) {
@@ -89,6 +75,7 @@ fun SearchScreen() {
                     contentDescription = stringResource(R.string.search),
                     tint = Color(0xFFAEAFB4),
                     modifier = Modifier.size(18.dp)
+                        .clickable{}
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -109,8 +96,22 @@ fun SearchScreen() {
                         }
                         innerTextField()
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.weight(1f)
                 )
+                AnimatedVisibility(
+                    visible = searchQuery.isNotEmpty(),
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.cancel),
+                        tint = Color(0xFFAEAFB4),
+                        modifier = Modifier
+                            .size(18.dp)
+                            .clickable { searchQuery = "" }
+                    )
+                }
             }
         }
     }

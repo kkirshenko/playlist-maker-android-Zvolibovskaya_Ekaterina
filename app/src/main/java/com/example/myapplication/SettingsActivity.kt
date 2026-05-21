@@ -1,16 +1,29 @@
 package com.example.myapplication
 
-import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.content.Intent
 import androidx.compose.foundation.background
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Switch
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.SwitchDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,24 +31,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 
-class SettingsActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            SettingsScreen()
-        }
-    }
-}
 
-@Preview()
+
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
-    val activity = context as? Activity
     var isDarkTheme by remember { mutableStateOf(false) }
 
     Column(
@@ -49,7 +53,7 @@ fun SettingsScreen() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { activity?.finish() }, modifier = Modifier
+                onClick = { onBack() }, modifier = Modifier
                     .padding(0.dp, end = 24.dp)
                     .size(24.dp)
             ) {
@@ -80,15 +84,33 @@ fun SettingsScreen() {
             Text(stringResource(R.string.dark_theme), fontSize = 16.sp, color = Color.Black)
             Switch(
                 checked = isDarkTheme,
-                onCheckedChange = { isDarkTheme = it }
+                onCheckedChange = { isDarkTheme = it },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color(0xFF3772E7),
+                    checkedTrackColor = Color(0xFF3772E7)
+                )
             )
         }
 
-        // Поделиться приложением
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical  = 21.dp),
+                .padding(vertical  = 21.dp)
+                .clickable{
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            context.getString(R.string.share_message)
+                        )
+                    }
+                    context.startActivity(
+                        Intent.createChooser(
+                            shareIntent,
+                            context.getString(R.string.share_app)
+                        )
+                    )
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -98,29 +120,42 @@ fun SettingsScreen() {
                 tint = Color.Gray)
         }
 
-        // Написать в поддержку
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical  = 21.dp),
+                .padding(vertical  = 21.dp)
+                .clickable {
+                val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = ("mailto:" + context.getString(R.string.dev_mail)).toUri()
+                    putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_subject))
+                    putExtra(Intent.EXTRA_TEXT, context.getString(R.string.email_body))
+                }
+                context.startActivity(emailIntent)
+            },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Написать в поддержку", fontSize = 16.sp, color = Color.Black)
+            Text(stringResource(R.string.write_to_support), fontSize = 16.sp, color = Color.Black)
             Icon(painter = painterResource(id = R.drawable.ic_support),
-                contentDescription = "Поддержка",
+                contentDescription = stringResource(R.string.write_to_support),
                 tint = Color.Gray)
         }
 
-        // Пользовательское соглашение
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical  = 21.dp),
+                .padding(vertical  = 21.dp)
+                .clickable {
+                val browserIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    context.getString(R.string.user_agreement_link).toUri()
+                )
+                context.startActivity(browserIntent)
+            },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Пользовательское соглашение", fontSize = 16.sp, color = Color.Black)
+            Text(stringResource(R.string.user_agreement), fontSize = 16.sp, color = Color.Black)
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = stringResource(R.string.arrow),

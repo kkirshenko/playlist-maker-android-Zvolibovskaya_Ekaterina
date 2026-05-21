@@ -1,6 +1,6 @@
 package com.example.myapplication
 
-import android.content.Intent
+
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -25,24 +24,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PlaylistMakerApp()
+            val navController = rememberNavController()
+            PlaylistHost(navController = navController)
         }
     }
 }
 
 
 
-@Preview()
+
 @Composable
-fun PlaylistMakerApp() {
+fun PlaylistMakerApp(navigateToSearch: () -> Unit,
+                     navigateToSettings: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,18 +67,14 @@ fun PlaylistMakerApp() {
                 .padding(vertical = 16.dp)
         )
         {
-            MenuItem(icon = R.drawable.ic_search, title = stringResource( R.string.search)){ context -> context.startActivity(
-                Intent(context, SearchActivity::class.java)
-            )}
+            MenuItem(icon = R.drawable.ic_search, title = stringResource( R.string.search)){ navigateToSearch()}
             MenuItem(icon = R.drawable.ic_library, title = stringResource( R.string.library)){ context -> Toast
                 .makeText(context, "Нажата кнопка Плейлисты", Toast.LENGTH_SHORT)
                 .show()}
             MenuItem(icon = R.drawable.ic_favorite, title = stringResource( R.string.favorite)){ context -> Toast
                 .makeText(context, "Нажата кнопка Избранное", Toast.LENGTH_SHORT)
                 .show()}
-            MenuItem(icon = R.drawable.ic_settings, title = stringResource( R.string.setting)){ context -> context.startActivity(
-                Intent(context, SettingsActivity::class.java)
-            )}
+            MenuItem(icon = R.drawable.ic_settings, title = stringResource( R.string.setting)){ navigateToSettings()}
         }
     }
 }
