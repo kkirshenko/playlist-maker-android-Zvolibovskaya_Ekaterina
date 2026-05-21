@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.search
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,13 +25,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.domain.Track
+import com.example.myapplication.domain.models.Track
 
 @Composable
-fun TrackListItem(track: Track) {
+fun TrackListItem(track: Track,
+                  onTrackClick: () ->Unit) {
     Row(
         modifier = Modifier.fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 6.dp)
+            .clickable(onClick = {  onTrackClick.invoke() }),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

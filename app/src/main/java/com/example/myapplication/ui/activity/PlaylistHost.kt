@@ -1,18 +1,24 @@
 package com.example.myapplication.ui.activity
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.*
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.myapplication.ui.playlist.BottomSheetExample
-import com.example.myapplication.ui.playlist.PlaylistScreen
+import androidx.navigation.navArgument
+import com.example.myapplication.ui.favorites.FavoritesScreen
+import com.example.myapplication.ui.playlist.AddPlaylistScreen
+import com.example.myapplication.ui.playlist.PlaylistsScreen
 import com.example.myapplication.ui.search.SearchScreen
+import com.example.myapplication.ui.song.TrackDetailsScreen
 import com.example.myapplication.ui.setting.SettingsScreen
-import com.example.myapplication.ui.viewmodel.SearchViewModel
+import com.example.myapplication.ui.song.BottomSheetExample
+
+
 
 @Composable
 fun PlaylistHost(navController: NavHostController) {
@@ -24,27 +30,61 @@ fun PlaylistHost(navController: NavHostController) {
             PlaylistMakerApp(
                 navigateToSearch = { navController.navigate(Screen.SEARCH.route) },
                 navigateToSettings = { navController.navigate(Screen.SETTINGS.route) },
-                navigateToPlaylist = { navController.navigate(Screen.PLAYLIST.route) })
+                navigateToPlaylists = { navController.navigate(Screen.PLAYLISTS.route) },
+                navigateToFavorites = { navController.navigate(Screen.FAVORITES.route) })
         }
+
+
         composable(Screen.SEARCH.route) {
-            val searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.getViewModelFactory())
-            SearchScreen(onBack = { navController.popBackStack() }, viewModel = searchViewModel)
+            SearchScreen(onBack = { navController.popBackStack() }, navigateOnTrackDetails = {trackId ->
+                navController.navigate("${Screen.TRACKDETAIL.route}/$trackId")
+            })
         }
+
+
         composable(Screen.SETTINGS.route) {
             SettingsScreen(onBack = { navController.popBackStack() })
         }
-        composable(Screen.PLAYLIST.route) {
+
+
+        composable(Screen.PLAYLISTS.route) {
+            PlaylistsScreen(onBack = { navController.popBackStack() },
+                addNewPlaylist = { navController.navigate(Screen.NEW_PLAYLIST.route)},
+                navigateToPlaylist = {})
+        }
+
+
+        composable(Screen.FAVORITES.route) {
+            FavoritesScreen ( onBack = { navController.popBackStack() })
+        }
+
+
+        composable(Screen.NEW_PLAYLIST.route){
+            AddPlaylistScreen(onBack = { navController.popBackStack() })
+        }
+
+
+        composable(
+            route = "${Screen.TRACKDETAIL.route}/{trackId}",
+            arguments = listOf(
+                navArgument("trackId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            val trackId = backStackEntry.arguments?.getInt("trackId") ?: 0
             var showBottomSheet by remember { mutableStateOf(false) }
 
-            PlaylistScreen(
-                callback = { showBottomSheet = true },
-                onBack = { navController.popBackStack() }
+            TrackDetailsScreen(
+                onBack = { navController.popBackStack() },
+                trackId = trackId.toLong(),
+                callback = { showBottomSheet = true }
             )
 
             BottomSheetExample(
                 isShowPanel = showBottomSheet,
                 onDismissRequest = { showBottomSheet = false },
-                content = "Это работает"
+                trackId = trackId.toLong()
             )
         }
     }

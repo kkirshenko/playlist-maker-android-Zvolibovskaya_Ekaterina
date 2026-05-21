@@ -1,6 +1,6 @@
 package com.example.myapplication.data.dto
 
-import com.example.myapplication.domain.Track
+import com.example.myapplication.domain.models.Track
 
 sealed class SearchState {
     object Initial: SearchState() // Первоначальное cостояние экрана

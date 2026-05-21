@@ -4,5 +4,9 @@ enum class Screen(val route: String) {
     MAIN("main"),
     SEARCH("search"),
     SETTINGS("settings"),
-    PLAYLIST("playlist")
+    PLAYLISTS("playlists"),
+    NEW_PLAYLIST ("new_playlist"),
+    FAVORITES ("favorites"),
+    TRACKDETAIL( "track_detail")
+
 }

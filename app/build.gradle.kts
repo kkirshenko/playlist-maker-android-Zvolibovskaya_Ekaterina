@@ -53,6 +53,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.navigation:navigation-compose:2.9.5")
     implementation("androidx.activity:activity-ktx:1.11.0")
+    implementation(libs.koin.android)
+    implementation("io.insert-koin:koin-androidx-compose:4.1.0")
     implementation(libs.androidx.compose.ui)
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation(libs.androidx.compose.ui.graphics)

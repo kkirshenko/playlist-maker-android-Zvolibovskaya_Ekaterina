@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.search
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,9 +18,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import org.koin.androidx.compose.koinViewModel
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,13 +36,38 @@ import com.example.myapplication.R
 import com.example.myapplication.data.dto.SearchState
 import com.example.myapplication.ui.viewmodel.SearchViewModel
 
+
 @Composable
 fun SearchScreen(
     onBack: () -> Unit,
-    viewModel: SearchViewModel
+    navigateOnTrackDetails : (Long) -> Unit,
 ) {
+    val viewModel: SearchViewModel = koinViewModel()
     val screenState by viewModel.searchScreenState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    var historyList by remember { mutableStateOf<List<String>>(emptyList()) }
+    var isFocused by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    Log.i("anc", "abc2")
+    LaunchedEffect(searchQuery) {
+        viewModel.updateQuery(searchQuery)
+    }
+
+    LaunchedEffect(screenState) {
+        when (screenState) {
+            is SearchState.Success -> {
+                focusManager.clearFocus()
+            }
+            else -> Unit
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getHistoryList().collect {  list: List<String> ->
+            historyList = list.reversed()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -72,7 +104,12 @@ fun SearchScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(36.dp)
-                .background(Color(0xFFE7E8EB), RoundedCornerShape(8.dp)),
+                .background(color = Color(0xFFE7E8EB),
+                    shape = if (isFocused && searchQuery.isEmpty() && historyList.isNotEmpty()) {
+                    RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                } else {
+                    RoundedCornerShape(8.dp)
+                }),
             contentAlignment = Alignment.CenterStart
         ) {
             Row(
@@ -86,7 +123,7 @@ fun SearchScreen(
                     modifier = Modifier
                         .size(18.dp)
                         .clickable {
-                            viewModel.search(searchQuery)
+                            viewModel.updateQuery(searchQuery)
                         }
                 )
 
@@ -110,6 +147,10 @@ fun SearchScreen(
                         innerTextField()
                     },
                     modifier = Modifier.weight(1f)
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { focusState ->
+                            isFocused = focusState.isFocused
+                        }
                 )
 
                 AnimatedVisibility(
@@ -125,18 +166,38 @@ fun SearchScreen(
                             .size(18.dp)
                             .clickable {
                                 searchQuery = ""
-                                viewModel.reset()
+                                viewModel.clearSearch()
 
                             }
                     )
+
                 }
+
             }
+        }
+        if (isFocused && searchQuery.isEmpty() && historyList.isNotEmpty()) {
+            HistoryRequests(
+                historyList = historyList,
+                onClick = { word ->
+                    searchQuery = word
+                }
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         when (screenState) {
             is SearchState.Initial -> {
+
+                if (!searchQuery.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
             }
 
             is SearchState.Searching -> {
@@ -155,7 +216,7 @@ fun SearchScreen(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             items(tracks) { track ->
-                                TrackListItem(track)
+                                TrackListItem(track) {navigateOnTrackDetails(track.id)}
                             }
                         }
                     } else {

@@ -1,57 +1,64 @@
 package com.example.myapplication.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.creator.Creator
 import com.example.myapplication.data.dto.SearchState
-import com.example.myapplication.domain.TracksRepository
+import com.example.myapplication.domain.repositories.SearchHistoryRepository
+import com.example.myapplication.domain.repositories.TracksRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-class SearchViewModel(
-    private val tracksRepository: TracksRepository
-) : ViewModel() {
-    private val _searchScreenState = MutableStateFlow<SearchState>(SearchState.Initial)
-    val searchScreenState  = _searchScreenState.asStateFlow()
+@OptIn(FlowPreview::class)
+class SearchViewModel(private val tracksRepository: TracksRepository,private val  searchHistoryRepository: SearchHistoryRepository) : ViewModel() {
 
-    fun search(whatSearch: String){
+
+    private val _searchQuery = MutableStateFlow("")
+    private val _searchScreenState = MutableStateFlow<SearchState>(SearchState.Initial)
+    val searchScreenState = _searchScreenState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _searchQuery
+                .debounce(1000)
+                .distinctUntilChanged()
+                .collect { query ->
+                    if (query.isNotEmpty()) {
+                        performSearch(query)
+                    }
+                }
+        }
+    }
+
+    fun updateQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    private fun performSearch(request: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _searchScreenState.update { SearchState.Searching }
-                val list = tracksRepository.searchTracks(expression = whatSearch)
-                _searchScreenState.update {
-                    SearchState.Success(list)
-                }
-            } catch (e: IOException){
+                searchHistoryRepository.addToHistory(request)
+                val list = tracksRepository.searchTracks(expression = request)
+                _searchScreenState.update { SearchState.Success(list) }
+            } catch (e: IOException) {
                 _searchScreenState.update { SearchState.Fail(e.message.toString()) }
             }
         }
     }
 
-    fun reset(){
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                if (_searchScreenState != SearchState.Initial) {
-                    _searchScreenState.update { SearchState.Initial }
-                }
-            } catch (e: IOException){
-                _searchScreenState.update { SearchState.Fail(e.message.toString()) }
-            }
-        }
+    fun clearSearch() {
+        _searchScreenState.update { SearchState.Initial }
     }
 
-    companion object {
-        fun getViewModelFactory(): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return SearchViewModel(Creator.getTracksRepository()) as T
-                }
-            }
-    }
+     fun getHistoryList() = searchHistoryRepository.getHistoryRequests()
+
+
+
 }
