@@ -23,6 +23,9 @@
     <string name="nothing_search">Ничего не найденоь</string>
     <string name="error_network">Нет подключения к интернету</string>
     <string name="error_network_2">Не удалось загрузить данные. Проверьте подключение к интернету.</string>
+	
+    <string name="add">Добавить</string>
+
 
 
 </resources>

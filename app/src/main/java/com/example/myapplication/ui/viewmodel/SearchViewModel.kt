@@ -33,6 +33,17 @@ class SearchViewModel(
         }
     }
 
+    fun reset(){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                if (_searchScreenState != SearchState.Initial) {
+                    _searchScreenState.update { SearchState.Initial }
+                }
+            } catch (e: IOException){
+                _searchScreenState.update { SearchState.Fail(e.message.toString()) }
+            }
+        }
+    }
 
     companion object {
         fun getViewModelFactory(): ViewModelProvider.Factory =

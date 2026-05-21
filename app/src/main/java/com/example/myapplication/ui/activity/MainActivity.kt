@@ -40,12 +40,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-
-
 @Composable
 fun PlaylistMakerApp(navigateToSearch: () -> Unit,
-                     navigateToSettings: () -> Unit) {
+                     navigateToSettings: () -> Unit,
+                     navigateToPlaylist: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,9 +68,7 @@ fun PlaylistMakerApp(navigateToSearch: () -> Unit,
         )
         {
             MenuItem(icon = R.drawable.ic_search, title = stringResource( R.string.search)){ navigateToSearch()}
-            MenuItem(icon = R.drawable.ic_library, title = stringResource( R.string.library)){ context -> Toast
-                .makeText(context, "Нажата кнопка Плейлисты", Toast.LENGTH_SHORT)
-                .show()}
+            MenuItem(icon = R.drawable.ic_library, title = stringResource( R.string.library)){ navigateToPlaylist()}
             MenuItem(icon = R.drawable.ic_favorite, title = stringResource( R.string.favorite)){ context -> Toast
                 .makeText(context, "Нажата кнопка Избранное", Toast.LENGTH_SHORT)
                 .show()}

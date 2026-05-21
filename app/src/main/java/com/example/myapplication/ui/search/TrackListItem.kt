@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.data.network.Track
+import com.example.myapplication.domain.Track
 
 @Composable
 fun TrackListItem(track: Track) {

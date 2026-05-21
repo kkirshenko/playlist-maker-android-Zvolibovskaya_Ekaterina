@@ -125,7 +125,8 @@ fun SearchScreen(
                             .size(18.dp)
                             .clickable {
                                 searchQuery = ""
-                                viewModel.search("")
+                                viewModel.reset()
+
                             }
                     )
                 }
@@ -136,7 +137,6 @@ fun SearchScreen(
 
         when (screenState) {
             is SearchState.Initial -> {
-
             }
 
             is SearchState.Searching -> {
