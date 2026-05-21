@@ -6,11 +6,13 @@ import com.example.myapplication.data.dto.TracksSearchRequest
 import com.example.myapplication.data.dto.TracksSearchResponse
 import com.example.myapplication.data.mappers.toDomain
 import com.example.myapplication.data.mappers.toEntity
-import com.example.myapplication.domain.NetworkClient
+import com.example.myapplication.data.network.NetworkClient
 import com.example.myapplication.domain.models.Track
-import com.example.myapplication.domain.repositories.TracksRepository
+import com.example.myapplication.domain.api.TracksRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import kotlin.collections.map
 
 
@@ -65,7 +67,7 @@ class TracksRepositoryImpl(
         val response = networkClient.doRequest(dto)
 
         if (response.resultCode != 200 || response !is TracksSearchResponse) {
-            return emptyList()
+            throw IOException("Ошибка сети: ${response.errorMessage}")
         }
 
         response.results.map { track -> dao.insertTrack(track.toEntity()) }
@@ -77,5 +79,17 @@ class TracksRepositoryImpl(
     override fun getCountTrackFromPlaylist(playlistId: Long): Flow<Int>{
         return dao.getCountTrackFromPlaylist(playlistId)
     }
+
+    override fun getCountMinutesFromPlaylist(playlistId: Long): Flow<Int> = flow {
+        val timesOfTracks = dao.getMinuteFromPlaylist(playlistId)
+        val totalMinutes = timesOfTracks.sumOf { trackTime ->
+            val parts = trackTime.split(":")
+            val minutes = parts[0].toInt()
+            val seconds = parts[1].toInt()
+            minutes + if (seconds >= 30) 1 else 0
+        }
+        emit(totalMinutes)
+    }
+
 
 }

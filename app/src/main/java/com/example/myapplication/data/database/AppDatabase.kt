@@ -12,7 +12,7 @@ import com.example.myapplication.data.database.entities.TrackEntity
         TrackEntity::class,
         PlaylistEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

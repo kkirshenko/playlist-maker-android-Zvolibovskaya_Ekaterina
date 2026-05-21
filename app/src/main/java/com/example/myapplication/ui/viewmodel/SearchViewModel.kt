@@ -2,26 +2,32 @@ package com.example.myapplication.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.dto.SearchState
-import com.example.myapplication.domain.repositories.SearchHistoryRepository
-import com.example.myapplication.domain.repositories.TracksRepository
+import com.example.myapplication.domain.api.SearchHistoryRepository
+import com.example.myapplication.domain.api.ThemeRepository
+import com.example.myapplication.domain.api.TracksRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 
 @OptIn(FlowPreview::class)
-class SearchViewModel(private val tracksRepository: TracksRepository,private val searchHistoryRepository: SearchHistoryRepository) : ViewModel() {
+class SearchViewModel(private val tracksRepository: TracksRepository,private val searchHistoryRepository: SearchHistoryRepository, themeRepository: ThemeRepository) : ViewModel() {
 
 
     private val _searchQuery = MutableStateFlow("")
     private val _searchScreenState = MutableStateFlow<SearchState>(SearchState.Initial)
     val searchScreenState = _searchScreenState.asStateFlow()
+
+    val isDarkTheme = themeRepository.getTheme()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
 
     init {
         viewModelScope.launch {

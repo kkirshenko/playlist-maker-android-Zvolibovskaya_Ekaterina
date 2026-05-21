@@ -2,7 +2,7 @@ package com.example.myapplication.data.repositories
 
 
 import com.example.myapplication.data.preferences.SearchHistoryPreferences
-import com.example.myapplication.domain.repositories.SearchHistoryRepository
+import com.example.myapplication.domain.api.SearchHistoryRepository
 import kotlinx.coroutines.flow.Flow
 
 

@@ -1,7 +1,6 @@
 package com.example.myapplication.data.network
 
 import com.example.myapplication.data.dto.BaseResponse
-import com.example.myapplication.domain.NetworkClient
 import com.example.myapplication.data.dto.TracksSearchRequest
 import java.io.IOException
 

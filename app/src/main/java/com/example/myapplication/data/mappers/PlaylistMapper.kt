@@ -6,11 +6,13 @@ import com.example.myapplication.domain.models.Playlist
 fun PlaylistEntity.toDomain() = Playlist(
     id = id,
     name = name,
-    description = description
+    description = description,
+    coverImageUri = coverImageUri
 )
 
 fun Playlist.toEntity() = PlaylistEntity(
     id = id,
     name = name,
-    description = description
+    description = description,
+    coverImageUri = coverImageUri
 )

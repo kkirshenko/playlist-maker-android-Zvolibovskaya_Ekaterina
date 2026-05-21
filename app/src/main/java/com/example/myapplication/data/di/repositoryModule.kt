@@ -5,17 +5,18 @@ import com.example.myapplication.data.network.RetrofitNetworkClient
 import com.example.myapplication.data.repositories.PlaylistsRepositoryImpl
 import com.example.myapplication.data.repositories.SearchHistoryRepositoryImpl
 import com.example.myapplication.data.repositories.TracksRepositoryImpl
-import com.example.myapplication.domain.NetworkClient
-import com.example.myapplication.domain.repositories.PlaylistsRepository
-import com.example.myapplication.domain.repositories.SearchHistoryRepository
-import com.example.myapplication.domain.repositories.TracksRepository
+import com.example.myapplication.data.network.NetworkClient
+import com.example.myapplication.data.repositories.ThemeRepositoryImpl
+import com.example.myapplication.domain.api.PlaylistsRepository
+import com.example.myapplication.domain.api.SearchHistoryRepository
+import com.example.myapplication.domain.api.ThemeRepository
+import com.example.myapplication.domain.api.TracksRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
 
 val repositoryModule = module {
     single { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
@@ -30,4 +31,5 @@ val repositoryModule = module {
     single<TracksRepository> { TracksRepositoryImpl(get(), get()) }
     single<PlaylistsRepository> { PlaylistsRepositoryImpl( get()) }
     single<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
+    single<ThemeRepository> { ThemeRepositoryImpl(get()) }
 }

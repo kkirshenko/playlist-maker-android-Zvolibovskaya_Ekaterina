@@ -7,12 +7,14 @@ import org.koin.dsl.module
 
 val databaseModule = module {
 
-    single {
+    single<AppDatabase> {
+
         Room.databaseBuilder(
             androidContext(),
             AppDatabase::class.java,
             "database.db"
-        ).build()
+        )
+            .build()
     }
 
     single { get<AppDatabase>().trackDao() }

@@ -5,7 +5,7 @@ import com.example.myapplication.data.database.AppDatabase
 import com.example.myapplication.data.database.entities.PlaylistEntity
 import com.example.myapplication.data.mappers.toDomain
 import com.example.myapplication.domain.models.Playlist
-import com.example.myapplication.domain.repositories.PlaylistsRepository
+import com.example.myapplication.domain.api.PlaylistsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -27,11 +27,12 @@ class PlaylistsRepositoryImpl(
         }
     }
 
-    override suspend fun addNewPlaylist(name: String, description: String) {
+    override suspend fun addNewPlaylist(name: String, description: String, coverImageUri: String?) {
         dao.insertPlaylist(
             PlaylistEntity(
                 name = name,
                 description = description,
+                coverImageUri = coverImageUri
             )
         )
     }

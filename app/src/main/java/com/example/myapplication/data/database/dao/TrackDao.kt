@@ -26,6 +26,9 @@ interface TrackDao {
     @Query("SELECT * FROM tracks WHERE favorite = 1")
     fun getFavoriteTracks(): Flow<List<TrackEntity>>
 
+    @Query("Select trackTime FROM tracks WHERE playlistId = :id")
+    suspend  fun getMinuteFromPlaylist(id: Long): List<String>
+
     @Query("UPDATE tracks SET playlistId = :playlistId WHERE id = :trackId")
     suspend fun insertTrackToPlaylist(trackId : Long, playlistId: Long)
 
@@ -38,7 +41,7 @@ interface TrackDao {
     @Query("UPDATE tracks SET playlistId = 0 WHERE playlistId = :playlistId")
     suspend fun deletePlaylistById(playlistId: Long)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTrack(track: TrackEntity) : Long
 
     @Delete
