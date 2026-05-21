@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.search
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import com.example.myapplication.domain.models.Track
+import com.example.myapplication.ui.song.TrackImage
 
 @Composable
 fun TrackListItem(track: Track,
@@ -37,14 +36,9 @@ fun TrackListItem(track: Track,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_music),
-            contentDescription = "Трек ${track.trackName}",
-            modifier = Modifier
-                .size(45.dp)
-                .clip(RoundedCornerShape(6.dp)),
-            contentScale = ContentScale.Crop
-        )
+        TrackImage(track.image, modifier = Modifier
+            .size(45.dp)
+            .clip(RoundedCornerShape(6.dp)),)
         Spacer(modifier = Modifier.width(12.dp))
         Column(
             modifier = Modifier.weight(1f)

@@ -1,24 +1,27 @@
 package com.example.myapplication.data.repositories
 
-import android.util.Log
+
 import com.example.myapplication.data.database.DatabaseMock
+import com.example.myapplication.data.dto.TracksSearchRequest
+import com.example.myapplication.data.dto.TracksSearchResponse
+import com.example.myapplication.domain.NetworkClient
 import com.example.myapplication.domain.models.Track
 import com.example.myapplication.domain.repositories.TracksRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 
 class TracksRepositoryImpl(
-    private val database: DatabaseMock) : TracksRepository {
+    private val database: DatabaseMock,
+    private val networkClient: NetworkClient
+) : TracksRepository {
 
 
     override fun getTrackByNameAndArtist(track: Track): Flow<Track?> {
         return database.getTrackByNameAndArtist(track)
     }
 
-    override fun getTrackByID(trackId : Long): Track? {
-        Log.i("abc3", trackId.toString())
-        return listTracks.find { it.id == trackId }
+    override fun getTrackByID(trackId : Long): Flow<Track?> {
+        return database.getTrackByID(trackId)
     }
 
     override suspend fun insertSongToPlaylist(track: Track, playlistId: Long) {
@@ -41,29 +44,17 @@ class TracksRepositoryImpl(
         database.deletePlaylistById(playlistId)
     }
     override suspend fun searchTracks(expression: String): List<Track> {
-        delay(1000)
-        return listTracks.filter { it.trackName.lowercase().contains(expression.lowercase()) }
+
+        val dto = TracksSearchRequest(expression)
+        val response = networkClient.doRequest(dto)
+
+        if (response.resultCode != 200 || response !is TracksSearchResponse) {
+            return emptyList()
+        }
+
+        val savedTracks =  database.addTracks(response)
+
+        return savedTracks
     }
 
-    val listTracks = listOf(
-        Track(
-            id = 1,
-            trackName = "Владивосток 2000",
-            artistName = "Мумий Троль",
-            trackTime = "2:38",
-            image = "",
-            favorite = false,
-            playlistId = 0
-        ),
-
-        Track(
-            id = 10,
-            trackName = "Чёрный бумер",
-            artistName = "Серега",
-            trackTime = "4:01",
-            image = "",
-            favorite = false,
-            playlistId = 0
-        )
-    )
 }

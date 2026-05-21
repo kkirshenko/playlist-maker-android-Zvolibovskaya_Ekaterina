@@ -36,8 +36,11 @@ class SearchViewModel(private val tracksRepository: TracksRepository,private val
         }
     }
 
-    fun updateQuery(query: String) {
+    fun updateQuery(query: String, immediate: Boolean = false) {
         _searchQuery.value = query
+        if (immediate && query.isNotEmpty()) {
+            performSearch(query)
+        }
     }
 
     private fun performSearch(request: String) {

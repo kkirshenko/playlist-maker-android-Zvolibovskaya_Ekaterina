@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -23,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.ui.playlist.PlaylistListItem
+import com.example.myapplication.ui.playlists.PlaylistListItem
 import com.example.myapplication.ui.viewmodel.PlaylistViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,7 +38,8 @@ fun BottomSheetExample(
     val playlistViewModel: PlaylistViewModel = koinViewModel()
     val playlists by playlistViewModel.playlists.collectAsState(emptyList())
     val sheetState = rememberModalBottomSheetState()
-    val track = playlistViewModel.getTrackById(trackId)
+    val trackState by playlistViewModel.getTrackById(trackId).collectAsState(initial = null)
+    val track = trackState
 
 
     if (isShowPanel) {
@@ -70,9 +70,8 @@ fun BottomSheetExample(
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                        items(playlists) { playlist ->
                             PlaylistListItem(playlist = playlist) {
-                               track?.playlistId = playlist.id
+                                playlistViewModel.insertSongToPlaylist(track!!, playlist.id)
                             }
-                            HorizontalDivider(thickness = 0.5.dp)
                         }
                     }
                 }

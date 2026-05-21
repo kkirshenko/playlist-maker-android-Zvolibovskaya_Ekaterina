@@ -67,6 +67,7 @@ fun PlaylistMakerApp(navigateToSearch: () -> Unit,
                 .padding(vertical = 16.dp)
         )
         {
+
             MenuItem(icon = R.drawable.ic_search, title = stringResource( R.string.search)){ navigateToSearch()}
             MenuItem(icon = R.drawable.ic_library, title = stringResource( R.string.library)){ navigateToPlaylists()}
             MenuItem(icon = R.drawable.ic_favorite, title = stringResource( R.string.favorite)){navigateToFavorites()}

@@ -1,19 +1,19 @@
-package com.example.myapplication.ui.song
+package com.example.myapplication.ui.playlist
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -30,19 +30,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
+import com.example.myapplication.ui.search.TrackListItem
 import com.example.myapplication.ui.viewmodel.PlaylistViewModel
 import org.koin.androidx.compose.koinViewModel
 
-
 @Composable
-fun TrackDetailsScreen(
-    onBack: () -> Unit,
-    trackId: Long,
-    callback: () -> Unit
-) {
+fun PlaylistScreen(onBack: () -> Unit,
+                   playlistId: Long,
+                   navigateOnTrackDetails: (Long) -> Unit) {
     val viewModel: PlaylistViewModel = koinViewModel()
-    val trackState by viewModel.getTrackById(trackId).collectAsState(initial = null)
-    val track = trackState
+    val playlistState by viewModel.getPlaylistById(playlistId).collectAsState(initial = null)
+    val playlist = playlistState
 
     Column(
         modifier = Modifier
@@ -70,6 +68,7 @@ fun TrackDetailsScreen(
 
         Spacer(Modifier.height(46.dp))
 
+
         Box(
             modifier = Modifier
                 .size(375.dp)
@@ -78,88 +77,58 @@ fun TrackDetailsScreen(
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                TrackImage(
-                    track?.image, modifier = Modifier .size(375.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_new_playlist),
+                    contentDescription = stringResource(R.string.new_playlist),
+                    tint = Color(0XFFAEAFB4)
+                )
             }
         }
 
         Spacer(Modifier.height(24.dp))
 
         Text(
-            track?.trackName ?: "",
-            fontSize = 22.sp,
+            playlist?.name ?: "",
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold)
 
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
 
 
         Text(
-            track?.artistName ?: "",
-            fontSize = 14.sp)
+            playlist?.description ?: "",
+            fontSize = 18.sp)
+        Spacer(Modifier.height(8.dp))
+        IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Еще опции"
+                )
+        }
 
-
-        Spacer(Modifier.height(54.dp))
-
+        Spacer(Modifier.height(12.dp))
 
         Row(
             modifier = Modifier
-            .fillMaxWidth()){
-
-            Box(modifier = Modifier.fillMaxWidth()) {
-
-                FloatingActionButton(
-                    modifier = Modifier
-                        .padding(start = 10.dp),
-                    onClick = {callback()},
-                    containerColor = Color(0xFFBDBDBD),
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_add_playlist),
-                        contentDescription = stringResource(R.string.add_in_playlist),
-                        tint = Color.White
-                    )
-                }
-
-                FloatingActionButton(
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .align(Alignment.TopEnd),
-                    onClick = {!track?.favorite!! },
-                    containerColor = Color(0xFFBDBDBD),
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_like),
-                        contentDescription = stringResource(R.string.add_in_favotites),
-                        tint = Color.White
-                    )
+                .fillMaxSize()){
+            val tracks = playlist?.tracks
+            tracks?.isEmpty()?.let {
+                if (!it) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(tracks) { track ->
+                            TrackListItem(track) {navigateOnTrackDetails(track.id)}
+                        }
+                    }
                 }
             }
+
+
+
         }
 
-        Spacer(Modifier.height(24.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween) {
-
-
-            Text(
-                stringResource(R.string.duration),
-                fontSize = 13.sp,
-                color = Color(0xFFAEAFB4)
-            )
-
-
-            Text(
-                track?.trackTime ?: "",
-                fontSize = 13.sp,
-
-            )
-        }
     }
-}
 
+}

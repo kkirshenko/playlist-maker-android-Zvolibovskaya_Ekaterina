@@ -11,8 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.myapplication.ui.favorites.FavoritesScreen
-import com.example.myapplication.ui.playlist.AddPlaylistScreen
-import com.example.myapplication.ui.playlist.PlaylistsScreen
+import com.example.myapplication.ui.playlist.PlaylistScreen
+import com.example.myapplication.ui.playlists.AddPlaylistScreen
+import com.example.myapplication.ui.playlists.PlaylistsScreen
 import com.example.myapplication.ui.search.SearchScreen
 import com.example.myapplication.ui.song.TrackDetailsScreen
 import com.example.myapplication.ui.setting.SettingsScreen
@@ -50,7 +51,8 @@ fun PlaylistHost(navController: NavHostController) {
         composable(Screen.PLAYLISTS.route) {
             PlaylistsScreen(onBack = { navController.popBackStack() },
                 addNewPlaylist = { navController.navigate(Screen.NEW_PLAYLIST.route)},
-                navigateToPlaylist = {})
+                navigateToPlaylist = {playlistId ->
+                    navController.navigate("${Screen.PLAYLISTDETAIL.route}/$playlistId")})
         }
 
 
@@ -86,6 +88,26 @@ fun PlaylistHost(navController: NavHostController) {
                 onDismissRequest = { showBottomSheet = false },
                 trackId = trackId.toLong()
             )
+        }
+
+        composable(
+            route = "${Screen.PLAYLISTDETAIL.route}/{playlistId}",
+            arguments = listOf(
+                navArgument("playlistId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            val playlistId = backStackEntry.arguments?.getInt("playlistId") ?: 0
+
+            PlaylistScreen (
+                onBack = { navController.popBackStack() },
+                playlistId = playlistId.toLong(),
+                navigateOnTrackDetails = {trackId ->
+                    navController.navigate("${Screen.TRACKDETAIL.route}/$trackId")
+                }
+            )
+
         }
     }
 }

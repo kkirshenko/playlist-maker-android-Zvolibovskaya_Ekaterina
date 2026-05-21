@@ -1,7 +1,10 @@
 package com.example.myapplication.data.dto
 
 data class TrackDto(
-    val trackName: String,
-    val artistName: String,
-    val trackTimeMillis: Int,
+     val trackId: Long,
+     val trackName: String,
+     val artistName: String,
+     val trackTimeMillis: Long,
+     val previewUrl: String?,
+     val artworkUrl100: String?
 )

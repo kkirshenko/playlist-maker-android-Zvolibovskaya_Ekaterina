@@ -1,17 +1,19 @@
 package com.example.myapplication.data.database
 
 
+import com.example.myapplication.data.dto.TracksSearchResponse
 import com.example.myapplication.domain.models.Playlist
 import com.example.myapplication.domain.models.Track
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class DatabaseMock(
+class DatabaseMock(private val coroutine : CoroutineScope
 ) {
 
     private val historyList = mutableListOf<String>()
@@ -32,7 +34,7 @@ class DatabaseMock(
     }
 
     private fun notifyHistoryChanged() {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutine.launch {
             _historyUpdates.emit(Unit)
         }
     }
@@ -84,10 +86,30 @@ class DatabaseMock(
     }
 
     fun getFavoriteTracks(): Flow<List<Track>> = flow {
-        delay(300) // Имитируем задержку
+        delay(300)
         val favorites = tracks.filter { it.favorite }
         emit(favorites)
     }
 
+    fun addTracks(response: TracksSearchResponse): List<Track> {
+
+        var nextId = tracks.size.toLong()
+        val newTracks = response.results.map { dto ->
+            nextId++
+
+            Track(
+                id = nextId,
+                trackName = dto.trackName,
+                artistName = dto.artistName,
+                trackTime = SimpleDateFormat("mm:ss", Locale.getDefault())
+                    .format(dto.trackTimeMillis),
+                image = dto.artworkUrl100,
+                favorite = false,
+                playlistId = 0
+            )
+        }
+        tracks.addAll(newTracks)
+        return newTracks
+    }
 
 }

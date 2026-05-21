@@ -1,18 +1,34 @@
 package com.example.myapplication.data.di
 
 import com.example.myapplication.data.database.DatabaseMock
+import com.example.myapplication.data.network.ITunesApiService
+import com.example.myapplication.data.network.RetrofitNetworkClient
 import com.example.myapplication.data.repositories.PlaylistsRepositoryImpl
 import com.example.myapplication.data.repositories.SearchHistoryRepositoryImpl
 import com.example.myapplication.data.repositories.TracksRepositoryImpl
+import com.example.myapplication.domain.NetworkClient
 import com.example.myapplication.domain.repositories.PlaylistsRepository
 import com.example.myapplication.domain.repositories.SearchHistoryRepository
 import com.example.myapplication.domain.repositories.TracksRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 val repositoryModule = module {
-    single{ DatabaseMock() }
-    single<TracksRepository> { TracksRepositoryImpl(database = get()) }
-    single<PlaylistsRepository> { PlaylistsRepositoryImpl(database = get()) }
-    single<SearchHistoryRepository> { SearchHistoryRepositoryImpl(database = get()) }
+    single{CoroutineScope(Dispatchers.IO)}
+    single {
+        Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    single<ITunesApiService> { get<Retrofit>().create(ITunesApiService::class.java) }
+    single<NetworkClient> { RetrofitNetworkClient(api = get()) }
+    single{ DatabaseMock(get()) }
+    single<TracksRepository> { TracksRepositoryImpl(get(), get()) }
+    single<PlaylistsRepository> { PlaylistsRepositoryImpl( get()) }
+    single<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
 }

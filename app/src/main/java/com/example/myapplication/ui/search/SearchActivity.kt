@@ -1,6 +1,6 @@
 package com.example.myapplication.ui.search
 
-import android.util.Log
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,6 +12,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Button
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
@@ -49,7 +53,6 @@ fun SearchScreen(
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    Log.i("anc", "abc2")
     LaunchedEffect(searchQuery) {
         viewModel.updateQuery(searchQuery)
     }
@@ -123,7 +126,7 @@ fun SearchScreen(
                     modifier = Modifier
                         .size(18.dp)
                         .clickable {
-                            viewModel.updateQuery(searchQuery)
+                            viewModel.updateQuery(searchQuery, true)
                         }
                 )
 
@@ -277,6 +280,29 @@ fun SearchScreen(
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
                     )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Button(
+                        onClick = { viewModel.updateQuery(searchQuery, true )},
+                        colors = ButtonDefaults.buttonColors(
+                            disabledBackgroundColor = Color(0xFFAEAFB4),
+                            backgroundColor = Color(0xFF3772E7)
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(bottom = 32.dp)
+                            .height(50.dp)
+                            .fillMaxWidth(0.8f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.reset),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }

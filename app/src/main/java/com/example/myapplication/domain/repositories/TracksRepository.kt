@@ -7,7 +7,7 @@ interface TracksRepository {
 
     fun getTrackByNameAndArtist(track: Track): Flow<Track?>
     suspend fun getFavoriteTracks(): Flow<List<Track>>
-    fun getTrackByID(trackId : Long): Track?
+    fun getTrackByID(trackId : Long): Flow<Track?>
     suspend fun insertSongToPlaylist(track: Track, playlistId: Long)
     suspend fun deleteSongFromPlaylist(track: Track)
     suspend fun updateTrackFavoriteStatus(track: Track, isFavorite: Boolean)

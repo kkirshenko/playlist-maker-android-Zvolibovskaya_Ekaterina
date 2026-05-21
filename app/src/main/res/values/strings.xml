@@ -35,6 +35,10 @@
     <string name="add_in_playlist">Добавить в плейлист</string>
     <string name="add_in_favotites">Добавить в избранное</string>
     <string name="image_for_song">Обложка трека</string>
+	
+    <string name="reset">Обновить</string>
+
+
 
 
 
