@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 @OptIn(FlowPreview::class)
-class SearchViewModel(private val tracksRepository: TracksRepository,private val  searchHistoryRepository: SearchHistoryRepository) : ViewModel() {
+class SearchViewModel(private val tracksRepository: TracksRepository,private val searchHistoryRepository: SearchHistoryRepository) : ViewModel() {
 
 
     private val _searchQuery = MutableStateFlow("")

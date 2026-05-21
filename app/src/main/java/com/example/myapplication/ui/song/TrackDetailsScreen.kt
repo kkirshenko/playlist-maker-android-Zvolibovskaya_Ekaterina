@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -126,15 +129,17 @@ fun TrackDetailsScreen(
                     modifier = Modifier
                         .padding(end = 10.dp)
                         .align(Alignment.TopEnd),
-                    onClick = {!track?.favorite!! },
+                    onClick = {if (track?.favorite == true) viewModel.toggleFavorite(track.id,false) else viewModel.toggleFavorite(track!!.id,true)},
                     containerColor = Color(0xFFBDBDBD),
                     shape = CircleShape
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_like),
-                        contentDescription = stringResource(R.string.add_in_favotites),
-                        tint = Color.White
+                        imageVector = if(track?.favorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = Color.White,
+                        modifier = Modifier.size(30.dp)
                     )
+
                 }
             }
         }

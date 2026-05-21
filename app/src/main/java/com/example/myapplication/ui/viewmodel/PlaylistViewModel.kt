@@ -46,8 +46,10 @@ class PlaylistViewModel(private val tracksRepository: TracksRepository, private 
         }
     }
 
-    suspend fun toggleFavorite(track: Track, isFavorite: Boolean) {
-        tracksRepository.updateTrackFavoriteStatus(track, isFavorite)
+     fun toggleFavorite(trackId: Long, isFavorite: Boolean) {
+         viewModelScope.launch(Dispatchers.IO) {
+             tracksRepository.updateTrackFavoriteStatus(trackId, isFavorite)
+         }
     }
 
     suspend fun deleteSongFromPlaylist(track: Track) {
@@ -61,6 +63,14 @@ class PlaylistViewModel(private val tracksRepository: TracksRepository, private 
 
     fun isExist(track: Track): Flow<Track?> {
         return tracksRepository.getTrackByNameAndArtist(track = track)
+    }
+
+    fun getTracksFromPlaylistById(playlistId: Long): Flow<List<Track>>{
+        return tracksRepository.getTracksByPlaylist(playlistId)
+    }
+
+    fun getCountTrackFromPlaylist(playlistId: Long): Flow<Int> {
+        return tracksRepository.getCountTrackFromPlaylist(playlistId)
     }
 
 }

@@ -1,6 +1,8 @@
 package com.example.myapplication
 
 import android.app.Application
+import com.example.myapplication.data.di.databaseModule
+import com.example.myapplication.data.di.preferencesModule
 import com.example.myapplication.data.di.repositoryModule
 import com.example.myapplication.ui.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
@@ -13,7 +15,8 @@ class App: Application() {
 
         startKoin {
             androidContext(this@App)
-            modules(listOf(repositoryModule, viewModelModule))
+            modules(listOf(databaseModule,repositoryModule, preferencesModule, repositoryModule, viewModelModule))
         }
+
     }
 }

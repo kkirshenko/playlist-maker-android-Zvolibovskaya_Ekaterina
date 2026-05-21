@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,9 +20,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import com.example.myapplication.domain.models.Playlist
+import com.example.myapplication.ui.viewmodel.PlaylistViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun PlaylistListItem(playlist: Playlist, onClick: () -> Unit) {
+fun PlaylistListItem(playlist: Playlist,
+                     onClick: () -> Unit) {
+
+    val playlistViewModel: PlaylistViewModel = koinViewModel()
     Row(
         modifier = Modifier.Companion
             .fillMaxWidth()
@@ -38,8 +45,9 @@ fun PlaylistListItem(playlist: Playlist, onClick: () -> Unit) {
             modifier = Modifier.Companion.weight(1f),
             horizontalAlignment = Alignment.Companion.Start
         ) {
+            val count by playlistViewModel.getCountTrackFromPlaylist(playlist.id).collectAsState(null)
             Text(playlist.name, fontSize = 16.sp)
-            val text = "${playlist.tracks.size} tracks"
+            val text = "${count} tracks"
             Text(text, fontSize = 11.sp, color = Color.Gray)
         }
     }

@@ -39,8 +39,8 @@ fun PlaylistScreen(onBack: () -> Unit,
                    playlistId: Long,
                    navigateOnTrackDetails: (Long) -> Unit) {
     val viewModel: PlaylistViewModel = koinViewModel()
-    val playlistState by viewModel.getPlaylistById(playlistId).collectAsState(initial = null)
-    val playlist = playlistState
+    val playlist by viewModel.getPlaylistById(playlistId).collectAsState(initial = null)
+
 
     Column(
         modifier = Modifier
@@ -112,9 +112,9 @@ fun PlaylistScreen(onBack: () -> Unit,
         Row(
             modifier = Modifier
                 .fillMaxSize()){
-            val tracks = playlist?.tracks
-            tracks?.isEmpty()?.let {
-                if (!it) {
+            val tracksState by viewModel.getTracksFromPlaylistById(playlistId).collectAsState(initial = null)
+            val tracks = tracksState
+            if(!tracks.isNullOrEmpty()){
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -124,11 +124,6 @@ fun PlaylistScreen(onBack: () -> Unit,
                     }
                 }
             }
-
-
-
         }
-
-    }
 
 }
