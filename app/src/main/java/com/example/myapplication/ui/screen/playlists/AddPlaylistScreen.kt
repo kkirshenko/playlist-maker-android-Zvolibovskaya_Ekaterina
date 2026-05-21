@@ -222,9 +222,10 @@ private fun saveCoverImageToInternalStorage(context: android.content.Context, so
     val destinationFile = File(directory, "playlist_cover_${System.currentTimeMillis()}.jpg")
 
     return try {
-        context.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
+        val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
+        inputStream.use {
             destinationFile.outputStream().use { outputStream ->
-                inputStream.copyTo(outputStream)
+                it.copyTo(outputStream)
             }
         }
         destinationFile.toUri().toString()

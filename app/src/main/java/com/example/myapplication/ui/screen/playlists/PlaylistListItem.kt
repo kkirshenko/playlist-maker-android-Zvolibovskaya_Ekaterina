@@ -46,7 +46,7 @@ fun PlaylistListItem(playlist: Playlist,
         Box(modifier = Modifier.size(48.dp)
             .clip(RoundedCornerShape(6.dp))) {
             AsyncImage(
-                model = playlist.coverImageUri!!.toUri(),
+                model = playlist.coverImageUri?.toUri(),
                 contentDescription = playlist.name,
                 modifier = Modifier.fillMaxSize(),
                 placeholder = painterResource(id = R.drawable.ic_new_playlist),
