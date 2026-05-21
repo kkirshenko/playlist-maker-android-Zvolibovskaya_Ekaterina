@@ -28,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.PlaylistHost
 import com.example.myapplication.R
 
 class MainActivity : ComponentActivity() {
@@ -108,7 +107,7 @@ fun MenuItem(icon: Int,
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow),
             contentDescription = stringResource(R.string.arrow),
-            tint = Color.Gray
+            tint = Color(0xFFAEAFB4)
         )
     }
 }

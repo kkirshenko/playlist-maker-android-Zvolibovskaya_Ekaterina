@@ -1,0 +1,1 @@
+В архитектуру приложения внедрены SearchViewModel и SearchScreen.
